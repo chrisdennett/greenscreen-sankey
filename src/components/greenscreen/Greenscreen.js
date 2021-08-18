@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from "react";
-import CanvasColourPicker from "../canvasColourPicker/CanvasColourPicker";
 import { processImage } from "./functions";
 import styles from "./greenscreen.module.css";
 // orig tutorial: https://github.com/sreetamdas/sreetamdas.com
@@ -7,6 +6,7 @@ import styles from "./greenscreen.module.css";
 export const GreenScreen = ({ bgImg }) => {
   const [frameCount, setFrameCount] = useState(0);
   const [colourToRemove, setColourToRemove] = useState({ r: 0, g: 255, b: 0 });
+  const [tolerance, setTolerance] = useState(10);
 
   const videoRef = useRef(null);
   const greenscreenCanvasRef = useRef(null);
@@ -46,7 +46,7 @@ export const GreenScreen = ({ bgImg }) => {
     const combinedCtx = combinedCanvas.getContext("2d");
 
     ctx.drawImage(video, 0, 0);
-    processImage(ctx, greenscreenCanvas, colourToRemove);
+    processImage(ctx, greenscreenCanvas, colourToRemove, tolerance);
 
     combinedCtx.drawImage(bgImg, 0, 0);
     combinedCtx.drawImage(
@@ -60,7 +60,7 @@ export const GreenScreen = ({ bgImg }) => {
       greenscreenCanvas.width / 2,
       greenscreenCanvas.height / 2
     );
-  }, [bgImg, colourToRemove, frameCount]);
+  }, [bgImg, colourToRemove, frameCount, tolerance]);
 
   const onCanvasClick = (e) => {
     e.preventDefault();
@@ -78,21 +78,34 @@ export const GreenScreen = ({ bgImg }) => {
     setColourToRemove({ r: red, g: green, b: blue });
   };
 
+  const onToleranceChange = (e) => {
+    setTolerance(parseInt(e.target.value));
+  };
+
   return (
     <div className={styles.greenscreen}>
-      <div
-        style={{
-          position: "fixed",
-          fontSize: 10,
-          zIndex: 1,
-          width: 50,
-          height: 50,
-          backgroundColor: `rgb(${colourToRemove.r}, ${colourToRemove.g}, ${colourToRemove.b})`,
-        }}
-      >
-        r:{colourToRemove.r} <br />
-        g:{colourToRemove.g} <br />
-        b:{colourToRemove.b}
+      <div>
+        <div
+          style={{
+            fontSize: 10,
+            zIndex: 1,
+            width: 50,
+            height: 50,
+            backgroundColor: `rgb(${colourToRemove.r}, ${colourToRemove.g}, ${colourToRemove.b})`,
+          }}
+        >
+          r:{colourToRemove.r} <br />
+          g:{colourToRemove.g} <br />
+          b:{colourToRemove.b}
+        </div>
+
+        <input
+          type="range"
+          value={tolerance}
+          onChange={onToleranceChange}
+          min="0"
+          max="255"
+        />
       </div>
 
       <canvas
