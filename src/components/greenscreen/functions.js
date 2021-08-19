@@ -25,14 +25,12 @@ export const removeGreenscreen = (
     if (redInRange && greenInRange && blueInRange) {
       snapshot.data[i * 4 + 3] = 0;
     } else if (colourMode === "b&w") {
-      let gray = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-      gray += brightnessAdjust;
+      const gray = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
       snapshot.data[i * 4] = gray;
       snapshot.data[i * 4 + 1] = gray;
       snapshot.data[i * 4 + 2] = gray;
     } else if (colourMode === "b&w2") {
-      let avg = (red + green + blue) / 3;
-      avg += brightnessAdjust;
+      const avg = (red + green + blue) / 3;
       snapshot.data[i * 4] = avg;
       snapshot.data[i * 4 + 1] = avg;
       snapshot.data[i * 4 + 2] = avg;
@@ -50,16 +48,25 @@ export const removeGreenscreen = (
         255
       );
     } else {
-      snapshot.data[i * 4] = red + brightnessAdjust;
-      snapshot.data[i * 4 + 1] = green + brightnessAdjust;
-      snapshot.data[i * 4 + 2] = blue + brightnessAdjust;
+      snapshot.data[i * 4] = red;
+      snapshot.data[i * 4 + 1] = green;
+      snapshot.data[i * 4 + 2] = blue;
     }
   }
 
+  applyBrightness(snapshot.data, brightnessAdjust);
   applyContrast(snapshot.data, contrastAdjust);
 
   ctx.putImageData(snapshot, 0, 0);
 };
+
+function applyBrightness(data, brightness) {
+  for (var i = 0; i < data.length; i += 4) {
+    data[i] += 255 * (brightness / 100);
+    data[i + 1] += 255 * (brightness / 100);
+    data[i + 2] += 255 * (brightness / 100);
+  }
+}
 
 function applyContrast(data, contrast) {
   var factor = (259.0 * (contrast + 255.0)) / (255.0 * (259.0 - contrast));

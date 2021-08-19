@@ -26,7 +26,7 @@ export default function App() {
     b: 175,
   });
   const [tolerance, setTolerance] = useState(100);
-  const [brightnessAdjust, setBrightnessAdjust] = useState(-50);
+  const [brightnessAdjust, setBrightnessAdjust] = useState(-12);
   const [contrastAdjust, setContrastAdjust] = useState(10);
 
   useKeyPress(" ", () => setShowControls((prev) => !prev));
