@@ -38,6 +38,9 @@ export const drawCombinedCanvas = ({
   cropBox,
   outBox,
 }) => {
+  greenscreenCanvas.width = bgImg.width;
+  greenscreenCanvas.height = bgImg.height;
+
   const ctx = greenscreenCanvas.getContext("2d");
   const combinedCtx = combinedCanvas.getContext("2d");
 

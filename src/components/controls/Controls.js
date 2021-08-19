@@ -9,9 +9,45 @@ export default function Controls({
   onToleranceChange,
   onCropBoxChange,
   onOutBoxChange,
+  visibleElements,
+  onVisibleElementsChange,
 }) {
   return (
     <div className={styles.controls}>
+      <span className={styles.controlName}>SHOW/HIDE CONTROLS = Spacebar</span>
+      <section>
+        <h2 className={styles.sectionHeader}>Global</h2>
+        <label>
+          <span className={styles.controlName}>WEBCAM:</span>
+          <input
+            type="checkbox"
+            checked={visibleElements.webcam}
+            onChange={(e) =>
+              onVisibleElementsChange("webcam", e.target.checked)
+            }
+          />
+        </label>
+        <label>
+          <span className={styles.controlName}>GREENSCREEN:</span>
+          <input
+            type="checkbox"
+            checked={visibleElements.greenscreen}
+            onChange={(e) =>
+              onVisibleElementsChange("greenscreen", e.target.checked)
+            }
+          />
+        </label>
+        <label>
+          <span className={styles.controlName}>OUTPUT:</span>
+          <input
+            type="checkbox"
+            checked={visibleElements.output}
+            onChange={(e) =>
+              onVisibleElementsChange("output", e.target.checked)
+            }
+          />
+        </label>
+      </section>
       <section>
         <h2 className={styles.sectionHeader}>Greenscreen settings</h2>
 
@@ -84,7 +120,6 @@ export default function Controls({
           {cropBox.bottom}
         </label>
       </section>
-
       <section>
         <h2 className={styles.sectionHeader}>Combined Photo settings</h2>
         <label>

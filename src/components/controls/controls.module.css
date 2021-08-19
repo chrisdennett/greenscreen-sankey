@@ -1,10 +1,12 @@
 .controls {
   padding: 0;
-  max-width: 250px;
+  width: 270px;
   background: rgba(0, 0, 0, 0.8);
   color: white;
   min-height: 100vh;
   padding: 0 10px;
+  position: fixed;
+  z-index: 999;
 }
 
 .controls section {
@@ -19,7 +21,8 @@
 }
 
 .controlName {
-  min-width: 300px;
+  margin-top: 10px;
+  min-width: 100px;
   display: inline-block;
 }
 

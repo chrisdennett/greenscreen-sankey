@@ -1,36 +1,29 @@
 import React, { useRef, useEffect, useState } from "react";
-import Controls from "../controls/Controls";
 import { drawCombinedCanvas } from "./functions";
 import styles from "./greenscreen.module.css";
 // orig tutorial: https://github.com/sreetamdas/sreetamdas.com
 
-export const GreenScreen = ({ bgImg }) => {
+export const GreenScreen = ({
+  bgImg,
+  colourToRemove,
+  tolerance,
+  cropBox,
+  outBox,
+  setColourToRemove,
+  visibleElements,
+}) => {
   const [frameCount, setFrameCount] = useState(0);
-  const [cropBox, setCropBox] = useState({
-    top: 0.25,
-    bottom: 0,
-    left: 0.2,
-    right: 0.17,
-  });
-  const [outBox, setOutBox] = useState({ top: 0.6, left: 0.3, height: 0.2 });
-  const [colourToRemove, setColourToRemove] = useState({
-    r: 27,
-    g: 220,
-    b: 166,
-  });
-  const [tolerance, setTolerance] = useState(100);
 
   const videoRef = useRef(null);
   const greenscreenCanvasRef = useRef(null);
   const combinedCanvasRef = useRef(null);
 
-  const hideWebcam = true;
-  const hideGreenscreenCanvas = false;
-
   useEffect(() => {
     const constraints = {
       audio: false,
       video: true,
+      width: { ideal: 1280 },
+      height: { ideal: 720 },
     };
 
     const video = videoRef.current;
@@ -83,46 +76,32 @@ export const GreenScreen = ({ bgImg }) => {
     setColourToRemove({ r: red, g: green, b: blue });
   };
 
-  const onToleranceChange = (e) => setTolerance(parseInt(e.target.value));
-  const onOutBoxChange = (prop, value) =>
-    setOutBox({ ...outBox, [prop]: value });
-  const onCropBoxChange = (prop, value) =>
-    setCropBox({ ...cropBox, [prop]: value });
-
-  const controlsProps = {
-    cropBox,
-    outBox,
-    tolerance,
-    colourToRemove,
-    onCropBoxChange,
-    onToleranceChange,
-    onOutBoxChange,
-  };
-
   return (
     <div className={styles.greenscreen}>
-      <Controls {...controlsProps} />
+      <canvas
+        id="Greenscreen"
+        ref={greenscreenCanvasRef}
+        width="1280"
+        height="1024"
+        hidden={!visibleElements.greenscreen}
+        onClick={onCanvasClick}
+      />
 
-      <main>
-        <canvas
-          ref={greenscreenCanvasRef}
-          width="640"
-          height="480"
-          hidden={hideGreenscreenCanvas}
-          onClick={onCanvasClick}
-        />
+      <canvas
+        ref={combinedCanvasRef}
+        width="1280"
+        height="1024"
+        hidden={!visibleElements.output}
+      />
 
-        <canvas ref={combinedCanvasRef} width="640" height="480" />
-
-        <video
-          ref={videoRef}
-          hidden={hideWebcam}
-          style={{
-            width: "640px",
-            height: "480px",
-          }}
-        />
-      </main>
+      <video
+        ref={videoRef}
+        hidden={!visibleElements.webcam}
+        style={{
+          width: "1280px",
+          height: "1024px",
+        }}
+      />
     </div>
   );
 };
