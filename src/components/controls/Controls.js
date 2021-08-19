@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./controls.module.css";
 
-const colourModeOptions = ["b&w", "colour", "sepia"];
+const colourModeOptions = ["b&w", "b&w2", "colour", "sepia"];
 
 export default function Controls({
   colourToRemove,
@@ -15,6 +15,8 @@ export default function Controls({
   onVisibleElementsChange,
   colourMode,
   setColourMode,
+  brightnessAdjust,
+  setBrightnessAdjust,
 }) {
   return (
     <div className={styles.controls}>
@@ -55,17 +57,6 @@ export default function Controls({
       </section>
       <section>
         <h2 className={styles.sectionHeader}>Greenscreen settings</h2>
-
-        <select
-          value={colourMode}
-          onChange={(e) => setColourMode(e.target.value)}
-        >
-          {colourModeOptions.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
 
         <span className={styles.controlName}>Colour to remove:</span>
         <div
@@ -136,6 +127,34 @@ export default function Controls({
           {cropBox.bottom}
         </label>
       </section>
+
+      <section>
+        <h2 className={styles.sectionHeader}>Colour Adjust</h2>
+        <select
+          value={colourMode}
+          onChange={(e) => setColourMode(e.target.value)}
+        >
+          {colourModeOptions.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+
+        <label>
+          <span className={styles.controlName}>brightnessAdjust: </span>
+          <input
+            type="range"
+            value={brightnessAdjust}
+            onChange={(e) => setBrightnessAdjust(parseInt(e.target.value))}
+            min="-100"
+            max="100"
+            step="1"
+          />
+          {brightnessAdjust}
+        </label>
+      </section>
+
       <section>
         <h2 className={styles.sectionHeader}>Combined Photo settings</h2>
         <label>

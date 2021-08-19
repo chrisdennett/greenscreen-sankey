@@ -14,10 +14,10 @@ export default function App() {
     output: true,
   });
   const [cropBox, setCropBox] = useState({
-    top: 0.25,
+    top: 0.15,
     bottom: 0,
     left: 0.2,
-    right: 0.17,
+    right: 0.26,
   });
   const [outBox, setOutBox] = useState({ top: 0.6, left: 0.3, height: 0.2 });
   const [colourToRemove, setColourToRemove] = useState({
@@ -26,6 +26,7 @@ export default function App() {
     b: 175,
   });
   const [tolerance, setTolerance] = useState(100);
+  const [brightnessAdjust, setBrightnessAdjust] = useState(-38);
 
   useKeyPress(" ", () => setShowControls((prev) => !prev));
 
@@ -53,6 +54,7 @@ export default function App() {
     visibleElements,
     setColourToRemove,
     colourMode,
+    brightnessAdjust,
   };
 
   const controlsProps = {
@@ -67,6 +69,8 @@ export default function App() {
     onVisibleElementsChange,
     colourMode,
     setColourMode,
+    brightnessAdjust,
+    setBrightnessAdjust,
   };
 
   return (

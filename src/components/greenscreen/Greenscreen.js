@@ -12,6 +12,7 @@ export const GreenScreen = ({
   setColourToRemove,
   visibleElements,
   colourMode,
+  brightnessAdjust,
 }) => {
   const [frameCount, setFrameCount] = useState(0);
 
@@ -58,6 +59,7 @@ export const GreenScreen = ({
       outBox,
       colourMode,
       frameCount,
+      brightnessAdjust,
     });
   });
 

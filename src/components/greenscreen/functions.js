@@ -4,10 +4,10 @@ export const removeGreenscreen = (
   canvas,
   colourToRemove,
   tolerance = 50,
-  colourMode
+  colourMode,
+  brightnessAdjust
 ) => {
   const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
   const numberOfPixels = snapshot.data.length / 4;
 
   // Now the processing
@@ -24,10 +24,17 @@ export const removeGreenscreen = (
     if (redInRange && greenInRange && blueInRange) {
       snapshot.data[i * 4 + 3] = 0;
     } else if (colourMode === "b&w") {
-      var gray = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+      let gray = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+      gray += brightnessAdjust;
       snapshot.data[i * 4] = gray;
       snapshot.data[i * 4 + 1] = gray;
       snapshot.data[i * 4 + 2] = gray;
+    } else if (colourMode === "b&w2") {
+      let avg = (red + green + blue) / 3;
+      avg += brightnessAdjust;
+      snapshot.data[i * 4] = avg;
+      snapshot.data[i * 4 + 1] = avg;
+      snapshot.data[i * 4 + 2] = avg;
     } else if (colourMode === "sepia") {
       snapshot.data[i * 4] = Math.min(
         Math.round(0.393 * red + 0.769 * green + 0.189 * blue),
@@ -41,6 +48,10 @@ export const removeGreenscreen = (
         Math.round(0.272 * red + 0.534 * green + 0.131 * blue),
         255
       );
+    } else {
+      snapshot.data[i * 4] = red + brightnessAdjust;
+      snapshot.data[i * 4 + 1] = green + brightnessAdjust;
+      snapshot.data[i * 4 + 2] = blue + brightnessAdjust;
     }
   }
 
@@ -57,6 +68,7 @@ export const drawCombinedCanvas = ({
   cropBox,
   outBox,
   colourMode,
+  brightnessAdjust,
 }) => {
   combinedCanvas.width = bgImg.width;
   combinedCanvas.height = bgImg.height;
@@ -72,7 +84,8 @@ export const drawCombinedCanvas = ({
     greenscreenCanvas,
     colourToRemove,
     tolerance,
-    colourMode
+    colourMode,
+    brightnessAdjust
   );
   // draw the photo to combined canvas
   combinedCtx.drawImage(bgImg, 0, 0);
