@@ -1,6 +1,85 @@
+// Where the Magic happens! 😁
+export const drawCombinedCanvas = ({
+  greenscreenCanvas,
+  combinedCanvas,
+  video,
+  bgImg,
+  colourToRemove,
+  tolerance,
+  cropBox,
+  outBox,
+  colourMode,
+  brightnessAdjust,
+  contrastAdjust,
+  mirror = true,
+}) => {
+  combinedCanvas.width = bgImg.width;
+  combinedCanvas.height = bgImg.height;
+
+  const greenscreenCtx = greenscreenCanvas.getContext("2d");
+  const combinedCtx = combinedCanvas.getContext("2d");
+
+  // draw video to greenscreen canvas
+  greenscreenCtx.save();
+  if (mirror) {
+    greenscreenCtx.scale(-1, 1);
+    greenscreenCtx.drawImage(video, -greenscreenCanvas.width, 0);
+  } else {
+    greenscreenCtx.drawImage(video, 0, 0);
+  }
+  greenscreenCtx.restore();
+
+  // remove the green
+  removeGreenscreen(
+    greenscreenCtx,
+    greenscreenCanvas,
+    colourToRemove,
+    tolerance,
+    colourMode,
+    brightnessAdjust,
+    contrastAdjust
+  );
+  // draw the photo to combined canvas
+  combinedCtx.drawImage(bgImg, 0, 0);
+  // draw image from greenscreen
+  const srcX = cropBox.left * greenscreenCanvas.width;
+  const srcY = cropBox.top * greenscreenCanvas.height;
+  const rightMargin = cropBox.right * greenscreenCanvas.width;
+  const bottomMargin = cropBox.bottom * greenscreenCanvas.height;
+  const srcW = greenscreenCanvas.width - (srcX + rightMargin);
+  const srcH = greenscreenCanvas.height - (srcY + bottomMargin);
+  const hToWRatio = srcW / srcH;
+
+  const outX = outBox.left * combinedCanvas.width;
+  const outY = outBox.top * combinedCanvas.height;
+  const outH = outBox.height * combinedCanvas.height;
+  const outW = outH * hToWRatio;
+
+  combinedCtx.drawImage(
+    greenscreenCanvas,
+    srcX,
+    srcY,
+    srcW,
+    srcH,
+    outX,
+    outY,
+    outW,
+    outH
+  );
+
+  // draw box to greenscreen
+  greenscreenCtx.strokeStyle = "red";
+  greenscreenCtx.strokeRect(
+    cropBox.left * greenscreenCanvas.width,
+    cropBox.top * greenscreenCanvas.height,
+    srcW,
+    srcH
+  );
+};
+
 // Get image with greenscreen removed
 export const removeGreenscreen = (
-  ctx,
+  greenscreenCtx,
   canvas,
   colourToRemove,
   tolerance = 50,
@@ -8,7 +87,12 @@ export const removeGreenscreen = (
   brightnessAdjust,
   contrastAdjust
 ) => {
-  const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const snapshot = greenscreenCtx.getImageData(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
   const numberOfPixels = snapshot.data.length / 4;
 
   // Now the processing
@@ -57,7 +141,7 @@ export const removeGreenscreen = (
   applyBrightness(snapshot.data, brightnessAdjust);
   applyContrast(snapshot.data, contrastAdjust);
 
-  ctx.putImageData(snapshot, 0, 0);
+  greenscreenCtx.putImageData(snapshot, 0, 0);
 };
 
 function applyBrightness(data, brightness) {
@@ -87,75 +171,6 @@ function truncateColor(value) {
 
   return value;
 }
-
-export const drawCombinedCanvas = ({
-  greenscreenCanvas,
-  combinedCanvas,
-  video,
-  bgImg,
-  colourToRemove,
-  tolerance,
-  cropBox,
-  outBox,
-  colourMode,
-  brightnessAdjust,
-  contrastAdjust,
-  mirror = true,
-}) => {
-  combinedCanvas.width = bgImg.width;
-  combinedCanvas.height = bgImg.height;
-
-  const ctx = greenscreenCanvas.getContext("2d");
-  const combinedCtx = combinedCanvas.getContext("2d");
-
-  // draw video to greenscreen canvas
-  ctx.save();
-  if (mirror) {
-    ctx.scale(-1, 1);
-    ctx.drawImage(video, -greenscreenCanvas.width, 0);
-  } else {
-    ctx.drawImage(video, 0, 0);
-  }
-  ctx.restore();
-
-  // remove the green
-  removeGreenscreen(
-    ctx,
-    greenscreenCanvas,
-    colourToRemove,
-    tolerance,
-    colourMode,
-    brightnessAdjust,
-    contrastAdjust
-  );
-  // draw the photo to combined canvas
-  combinedCtx.drawImage(bgImg, 0, 0);
-  // draw image from greenscreen
-  const srcX = cropBox.left * combinedCanvas.width;
-  const srcY = cropBox.top * combinedCanvas.height;
-  const rightMargin = cropBox.right * combinedCanvas.width;
-  const bottomMargin = cropBox.bottom * combinedCanvas.height;
-  const srcW = combinedCanvas.width - (srcX + rightMargin);
-  const srcH = combinedCanvas.height - (srcY + bottomMargin);
-  const hToWRatio = srcW / srcH;
-
-  const outX = outBox.left * combinedCanvas.width;
-  const outY = outBox.top * combinedCanvas.height;
-  const outH = outBox.height * combinedCanvas.height;
-  const outW = outH * hToWRatio;
-
-  combinedCtx.drawImage(
-    greenscreenCanvas,
-    srcX,
-    srcY,
-    srcW,
-    srcH,
-    outX,
-    outY,
-    outW,
-    outH
-  );
-};
 
 function isWidthinRange(num, target, margin) {
   const max = target + margin;
