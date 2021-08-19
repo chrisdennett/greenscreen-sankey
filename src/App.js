@@ -26,7 +26,8 @@ export default function App() {
     b: 175,
   });
   const [tolerance, setTolerance] = useState(100);
-  const [brightnessAdjust, setBrightnessAdjust] = useState(-38);
+  const [brightnessAdjust, setBrightnessAdjust] = useState(-50);
+  const [contrastAdjust, setContrastAdjust] = useState(10);
 
   useKeyPress(" ", () => setShowControls((prev) => !prev));
 
@@ -55,6 +56,7 @@ export default function App() {
     setColourToRemove,
     colourMode,
     brightnessAdjust,
+    contrastAdjust,
   };
 
   const controlsProps = {
@@ -71,6 +73,8 @@ export default function App() {
     setColourMode,
     brightnessAdjust,
     setBrightnessAdjust,
+    contrastAdjust,
+    setContrastAdjust,
   };
 
   return (

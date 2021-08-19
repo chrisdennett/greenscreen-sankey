@@ -17,6 +17,8 @@ export default function Controls({
   setColourMode,
   brightnessAdjust,
   setBrightnessAdjust,
+  contrastAdjust,
+  setContrastAdjust,
 }) {
   return (
     <div className={styles.controls}>
@@ -142,7 +144,7 @@ export default function Controls({
         </select>
 
         <label>
-          <span className={styles.controlName}>brightnessAdjust: </span>
+          <span className={styles.controlName}>brightness: </span>
           <input
             type="range"
             value={brightnessAdjust}
@@ -152,6 +154,19 @@ export default function Controls({
             step="1"
           />
           {brightnessAdjust}
+        </label>
+
+        <label>
+          <span className={styles.controlName}>contrast: </span>
+          <input
+            type="range"
+            value={contrastAdjust}
+            onChange={(e) => setContrastAdjust(parseInt(e.target.value))}
+            min="-100"
+            max="100"
+            step="1"
+          />
+          {contrastAdjust}
         </label>
       </section>
 

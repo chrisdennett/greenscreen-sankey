@@ -5,7 +5,8 @@ export const removeGreenscreen = (
   colourToRemove,
   tolerance = 50,
   colourMode,
-  brightnessAdjust
+  brightnessAdjust,
+  contrastAdjust
 ) => {
   const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const numberOfPixels = snapshot.data.length / 4;
@@ -55,8 +56,30 @@ export const removeGreenscreen = (
     }
   }
 
+  applyContrast(snapshot.data, contrastAdjust);
+
   ctx.putImageData(snapshot, 0, 0);
 };
+
+function applyContrast(data, contrast) {
+  var factor = (259.0 * (contrast + 255.0)) / (255.0 * (259.0 - contrast));
+
+  for (var i = 0; i < data.length; i += 4) {
+    data[i] = truncateColor(factor * (data[i] - 128.0) + 128.0);
+    data[i + 1] = truncateColor(factor * (data[i + 1] - 128.0) + 128.0);
+    data[i + 2] = truncateColor(factor * (data[i + 2] - 128.0) + 128.0);
+  }
+}
+
+function truncateColor(value) {
+  if (value < 0) {
+    value = 0;
+  } else if (value > 255) {
+    value = 255;
+  }
+
+  return value;
+}
 
 export const drawCombinedCanvas = ({
   greenscreenCanvas,
@@ -69,6 +92,7 @@ export const drawCombinedCanvas = ({
   outBox,
   colourMode,
   brightnessAdjust,
+  contrastAdjust,
 }) => {
   combinedCanvas.width = bgImg.width;
   combinedCanvas.height = bgImg.height;
@@ -85,7 +109,8 @@ export const drawCombinedCanvas = ({
     colourToRemove,
     tolerance,
     colourMode,
-    brightnessAdjust
+    brightnessAdjust,
+    contrastAdjust
   );
   // draw the photo to combined canvas
   combinedCtx.drawImage(bgImg, 0, 0);
