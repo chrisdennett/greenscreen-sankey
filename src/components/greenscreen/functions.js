@@ -100,6 +100,7 @@ export const drawCombinedCanvas = ({
   colourMode,
   brightnessAdjust,
   contrastAdjust,
+  doFlip = true,
 }) => {
   combinedCanvas.width = bgImg.width;
   combinedCanvas.height = bgImg.height;
@@ -107,8 +108,16 @@ export const drawCombinedCanvas = ({
   const ctx = greenscreenCanvas.getContext("2d");
   const combinedCtx = combinedCanvas.getContext("2d");
 
-  // draw vdioe to greenscreen canvas
-  ctx.drawImage(video, 0, 0);
+  // draw video to greenscreen canvas
+  ctx.save();
+  if (doFlip) {
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, -greenscreenCanvas.width, 0);
+  } else {
+    ctx.drawImage(video, 0, 0);
+  }
+  ctx.restore();
+
   // remove the green
   removeGreenscreen(
     ctx,
