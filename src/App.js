@@ -8,6 +8,7 @@ export default function App() {
   const [sourceImg, setSourceImg] = useState(null);
   const [showControls, setShowControls] = useState(true);
   const [colourMode, setColourMode] = useState("b&w");
+  const [mirror, setMirror] = useState(true);
   const [visibleElements, setVisibleElements] = useState({
     webcam: false,
     greenscreen: false,
@@ -57,6 +58,7 @@ export default function App() {
     colourMode,
     brightnessAdjust,
     contrastAdjust,
+    mirror,
   };
 
   const controlsProps = {
@@ -75,6 +77,8 @@ export default function App() {
     setBrightnessAdjust,
     contrastAdjust,
     setContrastAdjust,
+    mirror,
+    setMirror,
   };
 
   return (

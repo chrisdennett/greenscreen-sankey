@@ -100,7 +100,7 @@ export const drawCombinedCanvas = ({
   colourMode,
   brightnessAdjust,
   contrastAdjust,
-  doFlip = true,
+  mirror = true,
 }) => {
   combinedCanvas.width = bgImg.width;
   combinedCanvas.height = bgImg.height;
@@ -110,7 +110,7 @@ export const drawCombinedCanvas = ({
 
   // draw video to greenscreen canvas
   ctx.save();
-  if (doFlip) {
+  if (mirror) {
     ctx.scale(-1, 1);
     ctx.drawImage(video, -greenscreenCanvas.width, 0);
   } else {

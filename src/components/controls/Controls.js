@@ -19,6 +19,8 @@ export default function Controls({
   setBrightnessAdjust,
   contrastAdjust,
   setContrastAdjust,
+  mirror,
+  setMirror,
 }) {
   return (
     <div className={styles.controls}>
@@ -131,7 +133,8 @@ export default function Controls({
       </section>
 
       <section>
-        <h2 className={styles.sectionHeader}>Colour Adjust</h2>
+        <h2 className={styles.sectionHeader}>Image Adjust</h2>
+
         <select
           value={colourMode}
           onChange={(e) => setColourMode(e.target.value)}
@@ -142,6 +145,15 @@ export default function Controls({
             </option>
           ))}
         </select>
+
+        <label>
+          <span className={styles.controlName}>Mirror:</span>
+          <input
+            type="checkbox"
+            checked={mirror}
+            onChange={(e) => setMirror(e.target.checked)}
+          />
+        </label>
 
         <label>
           <span className={styles.controlName}>brightness: </span>

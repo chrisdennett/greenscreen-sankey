@@ -14,6 +14,7 @@ export const GreenScreen = ({
   colourMode,
   brightnessAdjust,
   contrastAdjust,
+  mirror,
 }) => {
   const [frameCount, setFrameCount] = useState(0);
 
@@ -62,6 +63,7 @@ export const GreenScreen = ({
       frameCount,
       brightnessAdjust,
       contrastAdjust,
+      mirror,
     });
   });
 
