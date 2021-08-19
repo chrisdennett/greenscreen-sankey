@@ -1,0 +1,32 @@
+.controls {
+  padding: 0;
+  max-width: 250px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  min-height: 100vh;
+  padding: 0 10px;
+}
+
+.controls section {
+  display: flex;
+  flex-direction: column;
+  border-bottom: rgba(255, 255, 255, 0.479) 1px solid;
+  padding: 10px 0 20px 0;
+}
+
+.sectionHeader {
+  font-size: 16px;
+}
+
+.controlName {
+  min-width: 300px;
+  display: inline-block;
+}
+
+.colourSwatch {
+  font-size: 10;
+  width: 50;
+  height: 50;
+  color: black;
+  padding: 10px;
+}

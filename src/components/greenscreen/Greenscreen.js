@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import Controls from "../controls/Controls";
 import { drawCombinedCanvas } from "./functions";
 import styles from "./greenscreen.module.css";
 // orig tutorial: https://github.com/sreetamdas/sreetamdas.com
@@ -64,7 +65,7 @@ export const GreenScreen = ({ bgImg }) => {
       cropBox,
       outBox,
     });
-  }, [bgImg, colourToRemove, frameCount, tolerance]);
+  }, [bgImg, colourToRemove, frameCount, tolerance, outBox, cropBox]);
 
   const onCanvasClick = (e) => {
     e.preventDefault();
@@ -88,144 +89,40 @@ export const GreenScreen = ({ bgImg }) => {
   const onCropBoxChange = (prop, value) =>
     setCropBox({ ...cropBox, [prop]: value });
 
+  const controlsProps = {
+    cropBox,
+    outBox,
+    tolerance,
+    colourToRemove,
+    onCropBoxChange,
+    onToleranceChange,
+    onOutBoxChange,
+  };
+
   return (
     <div className={styles.greenscreen}>
-      <div>
-        <div>
-          <h2>Greenscreen settings</h2>
-          <div
-            style={{
-              fontSize: 10,
-              zIndex: 1,
-              width: 50,
-              height: 50,
-              backgroundColor: `rgb(${colourToRemove.r}, ${colourToRemove.g}, ${colourToRemove.b})`,
-            }}
-          >
-            r:{colourToRemove.r} <br />
-            g:{colourToRemove.g} <br />
-            b:{colourToRemove.b}
-          </div>
-          <label>
-            tolerance:
-            <input
-              type="range"
-              value={tolerance}
-              onChange={onToleranceChange}
-              min="0"
-              max="255"
-            />
-            {tolerance}
-          </label>
-          <label>
-            crop left:
-            <input
-              type="range"
-              value={cropBox.left}
-              onChange={(e) => onCropBoxChange("left", e.target.value)}
-              min="0"
-              max="1"
-              step="0.01"
-            />
-            {outBox.left}
-          </label>
-          <label>
-            crop right:
-            <input
-              type="range"
-              value={cropBox.right}
-              onChange={(e) => onCropBoxChange("right", e.target.value)}
-              min="0"
-              max="1"
-              step="0.01"
-            />
-            {outBox.right}
-          </label>
-          <label>
-            crop top:
-            <input
-              type="range"
-              value={cropBox.top}
-              onChange={(e) => onCropBoxChange("top", e.target.value)}
-              min="0"
-              max="1"
-              step="0.01"
-            />
-            {outBox.top}
-          </label>
-          <label>
-            crop bottom:
-            <input
-              type="range"
-              value={cropBox.bottom}
-              onChange={(e) => onCropBoxChange("bottom", e.target.value)}
-              min="0"
-              max="1"
-              step="0.01"
-            />
-            {outBox.bottom}
-          </label>
-        </div>
-      </div>
+      <Controls {...controlsProps} />
 
-      <div>
-        <h2>Combined Photo settings</h2>
-        <label>
-          left:
-          <input
-            type="range"
-            value={outBox.left}
-            onChange={(e) => onOutBoxChange("left", e.target.value)}
-            min="0"
-            max="1"
-            step="0.01"
-          />
-          {outBox.left}
-        </label>
-        <label>
-          top:
-          <input
-            type="range"
-            value={outBox.top}
-            onChange={(e) => onOutBoxChange("top", e.target.value)}
-            min="0"
-            max="1"
-            step="0.01"
-          />
-          {outBox.top}
-        </label>
-        <label>
-          height:
-          <input
-            type="range"
-            value={outBox.height}
-            onChange={(e) => onOutBoxChange("height", e.target.value)}
-            min="0"
-            max="1"
-            step="0.01"
-          />
-          {outBox.height}
-        </label>
-      </div>
+      <main>
+        <canvas
+          ref={greenscreenCanvasRef}
+          width="640"
+          height="480"
+          hidden={hideGreenscreenCanvas}
+          onClick={onCanvasClick}
+        />
 
-      <canvas
-        ref={greenscreenCanvasRef}
-        width="640"
-        height="480"
-        hidden={hideGreenscreenCanvas}
-        onClick={onCanvasClick}
-      />
+        <canvas ref={combinedCanvasRef} width="640" height="480" />
 
-      <canvas ref={combinedCanvasRef} width="640" height="480" />
-
-      <video
-        ref={videoRef}
-        hidden={hideWebcam}
-        style={{
-          width: "640px",
-          height: "480px",
-        }}
-      />
+        <video
+          ref={videoRef}
+          hidden={hideWebcam}
+          style={{
+            width: "640px",
+            height: "480px",
+          }}
+        />
+      </main>
     </div>
   );
 };
