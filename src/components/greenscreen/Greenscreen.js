@@ -21,9 +21,7 @@ export const GreenScreen = ({
   useEffect(() => {
     const constraints = {
       audio: false,
-      video: true,
-      width: { ideal: 1280 },
-      height: { ideal: 720 },
+      video: { width: 1280, height: 720 },
     };
 
     const video = videoRef.current;
@@ -82,7 +80,7 @@ export const GreenScreen = ({
         id="Greenscreen"
         ref={greenscreenCanvasRef}
         width="1280"
-        height="1024"
+        height="720"
         hidden={!visibleElements.greenscreen}
         onClick={onCanvasClick}
       />
@@ -90,17 +88,17 @@ export const GreenScreen = ({
       <canvas
         ref={combinedCanvasRef}
         width="1280"
-        height="1024"
+        height="720"
         hidden={!visibleElements.output}
       />
 
       <video
         ref={videoRef}
         hidden={!visibleElements.webcam}
-        style={{
-          width: "1280px",
-          height: "1024px",
-        }}
+        // style={{
+        //   width: "1280px",
+        //   height: "720px",
+        // }}
       />
     </div>
   );
