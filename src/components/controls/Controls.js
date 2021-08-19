@@ -1,6 +1,8 @@
 import React from "react";
 import styles from "./controls.module.css";
 
+const colourModeOptions = ["b&w", "colour", "sepia"];
+
 export default function Controls({
   colourToRemove,
   tolerance,
@@ -11,12 +13,14 @@ export default function Controls({
   onOutBoxChange,
   visibleElements,
   onVisibleElementsChange,
+  colourMode,
+  setColourMode,
 }) {
   return (
     <div className={styles.controls}>
       <span className={styles.controlName}>SHOW/HIDE CONTROLS = Spacebar</span>
       <section>
-        <h2 className={styles.sectionHeader}>Global</h2>
+        <h2 className={styles.sectionHeader}>View</h2>
         <label>
           <span className={styles.controlName}>WEBCAM:</span>
           <input
@@ -27,6 +31,7 @@ export default function Controls({
             }
           />
         </label>
+
         <label>
           <span className={styles.controlName}>GREENSCREEN:</span>
           <input
@@ -50,6 +55,17 @@ export default function Controls({
       </section>
       <section>
         <h2 className={styles.sectionHeader}>Greenscreen settings</h2>
+
+        <select
+          value={colourMode}
+          onChange={(e) => setColourMode(e.target.value)}
+        >
+          {colourModeOptions.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
 
         <span className={styles.controlName}>Colour to remove:</span>
         <div

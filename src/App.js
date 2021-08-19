@@ -7,6 +7,7 @@ import styles from "./app.module.css";
 export default function App() {
   const [sourceImg, setSourceImg] = useState(null);
   const [showControls, setShowControls] = useState(true);
+  const [colourMode, setColourMode] = useState("b&w");
   const [visibleElements, setVisibleElements] = useState({
     webcam: false,
     greenscreen: false,
@@ -51,6 +52,7 @@ export default function App() {
     outBox,
     visibleElements,
     setColourToRemove,
+    colourMode,
   };
 
   const controlsProps = {
@@ -63,6 +65,8 @@ export default function App() {
     onOutBoxChange,
     visibleElements,
     onVisibleElementsChange,
+    colourMode,
+    setColourMode,
   };
 
   return (

@@ -11,6 +11,7 @@ export const GreenScreen = ({
   outBox,
   setColourToRemove,
   visibleElements,
+  colourMode,
 }) => {
   const [frameCount, setFrameCount] = useState(0);
 
@@ -55,8 +56,10 @@ export const GreenScreen = ({
       tolerance,
       cropBox,
       outBox,
+      colourMode,
+      frameCount,
     });
-  }, [bgImg, colourToRemove, frameCount, tolerance, outBox, cropBox]);
+  });
 
   const onCanvasClick = (e) => {
     e.preventDefault();

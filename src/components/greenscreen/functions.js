@@ -3,7 +3,8 @@ export const removeGreenscreen = (
   ctx,
   canvas,
   colourToRemove,
-  tolerance = 50
+  tolerance = 50,
+  colourMode
 ) => {
   const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
@@ -22,6 +23,24 @@ export const removeGreenscreen = (
 
     if (redInRange && greenInRange && blueInRange) {
       snapshot.data[i * 4 + 3] = 0;
+    } else if (colourMode === "b&w") {
+      var gray = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+      snapshot.data[i * 4] = gray;
+      snapshot.data[i * 4 + 1] = gray;
+      snapshot.data[i * 4 + 2] = gray;
+    } else if (colourMode === "sepia") {
+      snapshot.data[i * 4] = Math.min(
+        Math.round(0.393 * red + 0.769 * green + 0.189 * blue),
+        255
+      );
+      snapshot.data[i * 4 + 1] = Math.min(
+        Math.round(0.349 * red + 0.686 * green + 0.168 * blue),
+        255
+      );
+      snapshot.data[i * 4 + 2] = Math.min(
+        Math.round(0.272 * red + 0.534 * green + 0.131 * blue),
+        255
+      );
     }
   }
 
@@ -37,6 +56,7 @@ export const drawCombinedCanvas = ({
   tolerance,
   cropBox,
   outBox,
+  colourMode,
 }) => {
   combinedCanvas.width = bgImg.width;
   combinedCanvas.height = bgImg.height;
@@ -47,7 +67,13 @@ export const drawCombinedCanvas = ({
   // draw vdioe to greenscreen canvas
   ctx.drawImage(video, 0, 0);
   // remove the green
-  removeGreenscreen(ctx, greenscreenCanvas, colourToRemove, tolerance);
+  removeGreenscreen(
+    ctx,
+    greenscreenCanvas,
+    colourToRemove,
+    tolerance,
+    colourMode
+  );
   // draw the photo to combined canvas
   combinedCtx.drawImage(bgImg, 0, 0);
   // draw image from greenscreen
