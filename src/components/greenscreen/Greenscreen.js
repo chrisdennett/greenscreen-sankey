@@ -1,12 +1,23 @@
 import React, { useRef, useEffect, useState } from "react";
-import { processImage } from "./functions";
+import { drawCombinedCanvas } from "./functions";
 import styles from "./greenscreen.module.css";
 // orig tutorial: https://github.com/sreetamdas/sreetamdas.com
 
 export const GreenScreen = ({ bgImg }) => {
   const [frameCount, setFrameCount] = useState(0);
-  const [colourToRemove, setColourToRemove] = useState({ r: 0, g: 255, b: 0 });
-  const [tolerance, setTolerance] = useState(10);
+  const [cropBox, setCropBox] = useState({
+    top: 0.25,
+    bottom: 0,
+    left: 0.2,
+    right: 0.17,
+  });
+  const [outBox, setOutBox] = useState({ top: 0.6, left: 0.3, height: 0.2 });
+  const [colourToRemove, setColourToRemove] = useState({
+    r: 27,
+    g: 220,
+    b: 166,
+  });
+  const [tolerance, setTolerance] = useState(100);
 
   const videoRef = useRef(null);
   const greenscreenCanvasRef = useRef(null);
@@ -41,25 +52,18 @@ export const GreenScreen = ({ bgImg }) => {
 
     const video = videoRef.current;
     const greenscreenCanvas = greenscreenCanvasRef.current;
-    const ctx = greenscreenCanvas.getContext("2d");
     const combinedCanvas = combinedCanvasRef.current;
-    const combinedCtx = combinedCanvas.getContext("2d");
 
-    ctx.drawImage(video, 0, 0);
-    processImage(ctx, greenscreenCanvas, colourToRemove, tolerance);
-
-    combinedCtx.drawImage(bgImg, 0, 0);
-    combinedCtx.drawImage(
+    drawCombinedCanvas({
       greenscreenCanvas,
-      0,
-      0,
-      greenscreenCanvas.width,
-      greenscreenCanvas.height,
-      30,
-      150,
-      greenscreenCanvas.width / 2,
-      greenscreenCanvas.height / 2
-    );
+      combinedCanvas,
+      video,
+      bgImg,
+      colourToRemove,
+      tolerance,
+      cropBox,
+      outBox,
+    });
   }, [bgImg, colourToRemove, frameCount, tolerance]);
 
   const onCanvasClick = (e) => {
@@ -78,34 +82,130 @@ export const GreenScreen = ({ bgImg }) => {
     setColourToRemove({ r: red, g: green, b: blue });
   };
 
-  const onToleranceChange = (e) => {
-    setTolerance(parseInt(e.target.value));
-  };
+  const onToleranceChange = (e) => setTolerance(parseInt(e.target.value));
+  const onOutBoxChange = (prop, value) =>
+    setOutBox({ ...outBox, [prop]: value });
+  const onCropBoxChange = (prop, value) =>
+    setCropBox({ ...cropBox, [prop]: value });
 
   return (
     <div className={styles.greenscreen}>
       <div>
-        <div
-          style={{
-            fontSize: 10,
-            zIndex: 1,
-            width: 50,
-            height: 50,
-            backgroundColor: `rgb(${colourToRemove.r}, ${colourToRemove.g}, ${colourToRemove.b})`,
-          }}
-        >
-          r:{colourToRemove.r} <br />
-          g:{colourToRemove.g} <br />
-          b:{colourToRemove.b}
+        <div>
+          <h2>Greenscreen settings</h2>
+          <div
+            style={{
+              fontSize: 10,
+              zIndex: 1,
+              width: 50,
+              height: 50,
+              backgroundColor: `rgb(${colourToRemove.r}, ${colourToRemove.g}, ${colourToRemove.b})`,
+            }}
+          >
+            r:{colourToRemove.r} <br />
+            g:{colourToRemove.g} <br />
+            b:{colourToRemove.b}
+          </div>
+          <label>
+            tolerance:
+            <input
+              type="range"
+              value={tolerance}
+              onChange={onToleranceChange}
+              min="0"
+              max="255"
+            />
+            {tolerance}
+          </label>
+          <label>
+            crop left:
+            <input
+              type="range"
+              value={cropBox.left}
+              onChange={(e) => onCropBoxChange("left", e.target.value)}
+              min="0"
+              max="1"
+              step="0.01"
+            />
+            {outBox.left}
+          </label>
+          <label>
+            crop right:
+            <input
+              type="range"
+              value={cropBox.right}
+              onChange={(e) => onCropBoxChange("right", e.target.value)}
+              min="0"
+              max="1"
+              step="0.01"
+            />
+            {outBox.right}
+          </label>
+          <label>
+            crop top:
+            <input
+              type="range"
+              value={cropBox.top}
+              onChange={(e) => onCropBoxChange("top", e.target.value)}
+              min="0"
+              max="1"
+              step="0.01"
+            />
+            {outBox.top}
+          </label>
+          <label>
+            crop bottom:
+            <input
+              type="range"
+              value={cropBox.bottom}
+              onChange={(e) => onCropBoxChange("bottom", e.target.value)}
+              min="0"
+              max="1"
+              step="0.01"
+            />
+            {outBox.bottom}
+          </label>
         </div>
+      </div>
 
-        <input
-          type="range"
-          value={tolerance}
-          onChange={onToleranceChange}
-          min="0"
-          max="255"
-        />
+      <div>
+        <h2>Combined Photo settings</h2>
+        <label>
+          left:
+          <input
+            type="range"
+            value={outBox.left}
+            onChange={(e) => onOutBoxChange("left", e.target.value)}
+            min="0"
+            max="1"
+            step="0.01"
+          />
+          {outBox.left}
+        </label>
+        <label>
+          top:
+          <input
+            type="range"
+            value={outBox.top}
+            onChange={(e) => onOutBoxChange("top", e.target.value)}
+            min="0"
+            max="1"
+            step="0.01"
+          />
+          {outBox.top}
+        </label>
+        <label>
+          height:
+          <input
+            type="range"
+            value={outBox.height}
+            onChange={(e) => onOutBoxChange("height", e.target.value)}
+            min="0"
+            max="1"
+            step="0.01"
+          />
+          {outBox.height}
+        </label>
       </div>
 
       <canvas

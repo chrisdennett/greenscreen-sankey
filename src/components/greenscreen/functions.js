@@ -1,4 +1,10 @@
-export const processImage = (ctx, canvas, colourToRemove, tolerance = 50) => {
+// Get image with greenscreen removed
+export const removeGreenscreen = (
+  ctx,
+  canvas,
+  colourToRemove,
+  tolerance = 50
+) => {
   const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
   const numberOfPixels = snapshot.data.length / 4;
@@ -20,6 +26,52 @@ export const processImage = (ctx, canvas, colourToRemove, tolerance = 50) => {
   }
 
   ctx.putImageData(snapshot, 0, 0);
+};
+
+export const drawCombinedCanvas = ({
+  greenscreenCanvas,
+  combinedCanvas,
+  video,
+  bgImg,
+  colourToRemove,
+  tolerance,
+  cropBox,
+  outBox,
+}) => {
+  const ctx = greenscreenCanvas.getContext("2d");
+  const combinedCtx = combinedCanvas.getContext("2d");
+
+  // draw vdioe to greenscreen canvas
+  ctx.drawImage(video, 0, 0);
+  // remove the green
+  removeGreenscreen(ctx, greenscreenCanvas, colourToRemove, tolerance);
+  // draw the photo to combined canvas
+  combinedCtx.drawImage(bgImg, 0, 0);
+  // draw image from greenscreen
+  const srcX = cropBox.left * combinedCanvas.width;
+  const srcY = cropBox.top * combinedCanvas.height;
+  const rightMargin = cropBox.right * combinedCanvas.width;
+  const bottomMargin = cropBox.bottom * combinedCanvas.height;
+  const srcW = combinedCanvas.width - (srcX + rightMargin);
+  const srcH = combinedCanvas.height - (srcY + bottomMargin);
+  const hToWRatio = srcW / srcH;
+
+  const outX = outBox.left * combinedCanvas.width;
+  const outY = outBox.top * combinedCanvas.height;
+  const outH = outBox.height * combinedCanvas.height;
+  const outW = outH * hToWRatio;
+
+  combinedCtx.drawImage(
+    greenscreenCanvas,
+    srcX,
+    srcY,
+    srcW,
+    srcH,
+    outX,
+    outY,
+    outW,
+    outH
+  );
 };
 
 function isWidthinRange(num, target, margin) {
